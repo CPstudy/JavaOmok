@@ -82,7 +82,7 @@ public class MemberDAO {
 			ResultSet set = pstmt.executeQuery();
 			
 			if(set.next()) {
-				result = set.getString("wincount") + "½Â" + set.getString("defeatcount") + "ÆÐ";
+				result = set.getString("wincount") + "½Â " + set.getString("defeatcount") + "ÆÐ " + set.getString("drawcount") + "¹«";
 			}
 			
 			
@@ -94,6 +94,72 @@ public class MemberDAO {
 		}
 		
 		return result;
+	}
+	
+	public static int setWin(String id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		try {
+			con = DBConnect.getConnection();
+			pstmt = con.prepareStatement("UPDATE member SET wincount = wincount + 1 WHERE mem_id = ?");
+			pstmt.setString(1, id);
+			
+			int result = pstmt.executeUpdate();
+			if (result == 0) {
+				DBConnect.close(con, pstmt);
+				return ERROR;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		} finally {
+			DBConnect.close(con, pstmt);
+		}
+		return SUCCESS;
+	}
+	
+	public static int setDefeat(String id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		try {
+			con = DBConnect.getConnection();
+			pstmt = con.prepareStatement("UPDATE member SET defeatcount = wincount + 1 WHERE mem_id = ?");
+			pstmt.setString(1, id);
+
+			int result = pstmt.executeUpdate();
+			if (result == 0) {
+				DBConnect.close(con, pstmt);
+				return ERROR;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		} finally {
+			DBConnect.close(con, pstmt);
+		}
+		return SUCCESS;
+	}
+	
+	public static int setDraw(String id) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		try {
+			con = DBConnect.getConnection();
+			pstmt = con.prepareStatement("UPDATE member SET drawcount = wincount + 1 WHERE mem_id = ?");
+			pstmt.setString(1, id);
+
+			int result = pstmt.executeUpdate();
+			if (result == 0) {
+				DBConnect.close(con, pstmt);
+				return ERROR;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+
+		} finally {
+			DBConnect.close(con, pstmt);
+		}
+		return SUCCESS;
 	}
 
 }

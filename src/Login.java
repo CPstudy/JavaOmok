@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
@@ -42,7 +43,7 @@ public class Login extends JPanel implements ActionListener {
 	JLabel lblTitle;
 	JLabel lblMessage;
 	JTextField txtID;
-	JTextField txtPW;
+	JPasswordField txtPW;
 	JButton btnLogin;
 	JButton btnJoin;
 	JPanel panelJoin;
@@ -58,7 +59,7 @@ public class Login extends JPanel implements ActionListener {
 
 		panelLogin = new JPanel();
 		panelLogin.setLayout(null);
-		panelLogin.setBackground(new Color(220, 220, 220));
+		panelLogin.setBackground(StaticColor.BACKGROUND);
 		panelLogin.setBounds(580, 450, 310, 110);
 		add(panelLogin);
 		
@@ -74,11 +75,13 @@ public class Login extends JPanel implements ActionListener {
 		lblID = new JLabel("ID", JLabel.RIGHT);
 		lblID.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 14));
 		lblID.setBounds(0, 5, 30, 20);
+		lblID.setForeground(StaticColor.TEXT);
 		panelLogin.add(lblID);
 
 		lblPW = new JLabel("PW", JLabel.RIGHT);
 		lblPW.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 14));
 		lblPW.setBounds(0, 40, 30, 20);
+		lblPW.setForeground(StaticColor.TEXT);
 		panelLogin.add(lblPW);
 
 		txtID = new JTextField(10);
@@ -87,10 +90,10 @@ public class Login extends JPanel implements ActionListener {
 		txtID.setUI(new StyleTextFieldUI());
 		panelLogin.add(txtID);
 
-		txtPW = new JTextField(10);
+		txtPW = new JPasswordField();
 		txtPW.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 14));
 		txtPW.setBounds(lblPW.getX() + 40, 35, 150, 30);
-		txtPW.setUI(new StyleTextFieldUI());
+		txtPW.setUI(new StylePasswordFieldUI());
 		panelLogin.add(txtPW);
 
 		btnLogin = new JButton("¿‘¿Â");
@@ -99,7 +102,6 @@ public class Login extends JPanel implements ActionListener {
 		btnLogin.addActionListener(this);
 		btnLogin.setBackground(new Color(65, 175, 57));
 		btnLogin.setUI(new StyleButtonUI());
-		btnLogin.setEnabled(true);
 		panelLogin.add(btnLogin);
 
 		btnJoin = new JButton("»∏ø¯∞°¿‘");
@@ -108,7 +110,6 @@ public class Login extends JPanel implements ActionListener {
 		btnJoin.addActionListener(this);
 		btnJoin.setBackground(new Color(67, 116, 217));
 		btnJoin.setUI(new StyleButtonUI());
-		btnJoin.setEnabled(true);
 		panelLogin.add(btnJoin);
 		
 		lblMessage = new JLabel("", SwingConstants.RIGHT);

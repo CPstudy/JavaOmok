@@ -16,7 +16,7 @@ public class PlayerPanel extends JPanel {
 
 	PlayerPanel() {
 		setLayout(null);
-		setBackground(new Color(190, 190, 190));
+		setBackground(StaticColor.BACKGROUND);
 		setUI(new StylePanelUI());
 
 		imgStone = new JImageView("img/stone_none.png");
@@ -26,11 +26,13 @@ public class PlayerPanel extends JPanel {
 		lblName = new JLabel("", SwingConstants.CENTER);
 		lblName.setBounds(imgStone.getX() + imgStone.getWidth() + 5, 10, 110, 50);
 		lblName.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 20));
+		lblName.setForeground(StaticColor.TEXT);
 		add(lblName);
 
 		lblScore = new JLabel("", SwingConstants.CENTER);
 		lblScore.setBounds(0, 50, 150, 30);
 		lblScore.setFont(new Font("¸¼Àº °íµñ", Font.BOLD, 12));
+		lblScore.setForeground(StaticColor.TEXT);
 		add(lblScore);
 
 		btnStart = new JButton("Âü¿©ÇÏ±â");

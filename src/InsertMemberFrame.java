@@ -25,22 +25,24 @@ public class InsertMemberFrame extends JPanel implements ActionListener {
 	MemberDTO memDTO;
 	JTextField txtID;
 	JPasswordField txtPW, txtPW2;
-	JButton btnInsert, btnBack, btnExit;
+	JButton btnInsert, btnBack;
 
 	InsertMemberFrame() {
 
 		memDAO = new MemberDAO();
 		setLayout(null);
-		setBackground(new Color(220, 220, 220));
+		setBackground(StaticColor.BACKGROUND);
 		setSize(WIDTH, HEIGHT);
 
 		JLabel lblTitle = new JLabel("회원가입", SwingConstants.CENTER);
 		lblTitle.setBounds(0, 50, WIDTH, 50);
 		lblTitle.setFont(new Font("궁서체", Font.BOLD, 30));
+		lblTitle.setForeground(StaticColor.TEXT);
 		add(lblTitle);
 
 		JLabel lblID = new JLabel("아이디:", SwingConstants.LEFT);
 		lblID.setBounds(28, 200, 90, 30);
+		lblID.setForeground(StaticColor.TEXT);
 		add(lblID);
 
 		txtID = new JTextField(10);
@@ -50,43 +52,42 @@ public class InsertMemberFrame extends JPanel implements ActionListener {
 
 		JLabel lblPW = new JLabel("비밀번호:");
 		lblPW.setBounds(lblID.getX(), txtID.getY() + txtID.getHeight() + 10, lblID.getWidth(), lblID.getHeight());
+		lblPW.setForeground(StaticColor.TEXT);
 		add(lblPW);
 
 		txtPW = new JPasswordField(10);
 		txtPW.setBounds(lblPW.getX() + lblPW.getWidth() + 10, lblPW.getY(), txtID.getWidth(), txtID.getHeight());
-		txtPW.setUI(new StyleTextFieldUI());
+		txtPW.setUI(new StylePasswordFieldUI());
 		add(txtPW);
 
 		JLabel lblPW2 = new JLabel("비밀번호 확인:");
 		lblPW2.setBounds(lblPW.getX(), lblPW.getY() + lblPW.getHeight() + 10, lblPW.getWidth(), lblPW.getHeight());
+		lblPW2.setForeground(StaticColor.TEXT);
 		add(lblPW2);
 
 		txtPW2 = new JPasswordField(10);
 		txtPW2.setBounds(lblPW.getX() + lblPW.getWidth() + 10, lblPW2.getY(), txtPW.getWidth(), txtPW.getHeight());
-		txtPW2.setUI(new StyleTextFieldUI());
+		txtPW2.setUI(new StylePasswordFieldUI());
 		add(txtPW2);
 
 		btnInsert = new JButton("회원가입");
 		btnInsert.setFont(new Font("맑은 고딕", Font.BOLD, 10));
 		btnInsert.setBounds(20, 330, 80, 30);
 		btnInsert.addActionListener(this);
+		btnInsert.setBackground(new Color(65, 175, 57));
+		btnInsert.setUI(new StyleButtonUI());
 		add(btnInsert);
 
 		btnBack = new JButton("뒤로 가기");
 		btnBack.setFont(new Font("맑은 고딕", Font.BOLD, 10));
 		btnBack.setBounds(btnInsert.getX() + btnInsert.getWidth() + 10, btnInsert.getY(), 80, 30);
 		btnBack.addActionListener(this);
+		btnBack.setBackground(new Color(255, 187, 0));
+		btnBack.setUI(new StyleButtonUI());
 		add(btnBack);
-
-		btnExit = new JButton("종료");
-		btnExit.setFont(new Font("맑은 고딕", Font.BOLD, 10));
-		btnExit.setBounds(btnBack.getX() + btnBack.getWidth() + 10, btnBack.getY(), 80, 30);
-		btnExit.addActionListener(this);
-		add(btnExit);
 
 		add(btnInsert);
 		add(btnBack);
-		add(btnExit);
 		setVisible(true);
 	}
 
@@ -94,7 +95,7 @@ public class InsertMemberFrame extends JPanel implements ActionListener {
 		// TODO Auto-generated method stub
 		memDTO = new MemberDTO();
 		memDTO.setId(txtID.getText().toString());
-		memDTO.setPw(txtPW.getText().toString());
+		memDTO.setPw(new String(txtPW.getPassword()));
 	}
 
 	@Override

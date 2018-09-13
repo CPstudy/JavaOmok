@@ -2,10 +2,11 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.AbstractBorder;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.basic.BasicPanelUI;
+import javax.swing.plaf.basic.BasicPasswordFieldUI;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
-public class StylePanelUI extends BasicPanelUI {
+public class StylePasswordFieldUI extends BasicPasswordFieldUI {
+
 	private final static int ARC_WIDTH = 5;
 	private final static int ARC_HEIGHT = 5;
 	private final static int x = 0;
@@ -16,34 +17,34 @@ public class StylePanelUI extends BasicPanelUI {
 	private final static int BORDER_RIGHT = 4;
 
 	public static ComponentUI createUI(JComponent jComponent) {
-		return new BasicTextFieldUI();
+		return new BasicPasswordFieldUI();
 	}
 
 	public void installUI(JComponent jComponent) {
 		super.installUI(jComponent);
 		jComponent.setBorder(new RoundedBorder());
 		jComponent.setOpaque(false);
-	}
-	
-	
-
-	@Override
-	public void paint(Graphics g, JComponent c) {
-		// TODO Auto-generated method stub
-		super.paint(g, c);
-		g.setColor(new Color(190, 190, 190));
-		g.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), 10, 10);
+		
+		JPasswordField com = (JPasswordField) jComponent;
+		com.setForeground(StaticColor.TEXT);
+		com.setSelectedTextColor(new Color(255, 255, 255));
+		com.setSelectionColor(new Color(204, 114, 61));
 	}
 
-
+	protected void paintSafely(Graphics graphics) {
+		JComponent c = getComponent();
+		if (!c.isOpaque()) {
+			graphics.setColor(StaticColor.TEXT_BACKGROUND);
+			graphics.fillRoundRect(x, y, c.getWidth() - 1, c.getHeight() - 1, ARC_WIDTH, ARC_HEIGHT);
+		}
+		super.paintSafely(graphics);
+	}
 
 	private static class RoundedBorder extends AbstractBorder {
 		private static final long serialVersionUID = 1L;
 
 		public void paintBorder(Component coponent, Graphics g, int x, int y, int width, int height) {
-			g.setColor(StaticColor.PLAYERPANEL);
-			g.fillRoundRect(x, y, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
-			g.setColor(StaticColor.PLAYERPANEL_BORDER);
+			g.setColor(StaticColor.TEXT_BORDER);
 			g.drawRoundRect(x, y, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
 		}
 
@@ -52,5 +53,4 @@ public class StylePanelUI extends BasicPanelUI {
 		}
 
 	}
-
 }

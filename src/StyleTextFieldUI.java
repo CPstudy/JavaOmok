@@ -25,6 +25,7 @@ public class StyleTextFieldUI extends BasicTextFieldUI {
 		jComponent.setOpaque(false);
 		
 		JTextField com = (JTextField) jComponent;
+		com.setForeground(StaticColor.TEXT);
 		com.setSelectedTextColor(new Color(255, 255, 255));
 		com.setSelectionColor(new Color(204, 114, 61));
 	}
@@ -32,7 +33,7 @@ public class StyleTextFieldUI extends BasicTextFieldUI {
 	protected void paintSafely(Graphics graphics) {
 		JComponent c = getComponent();
 		if (!c.isOpaque()) {
-			graphics.setColor(c.getBackground());
+			graphics.setColor(StaticColor.TEXT_BACKGROUND);
 			graphics.fillRoundRect(x, y, c.getWidth() - 1, c.getHeight() - 1, ARC_WIDTH, ARC_HEIGHT);
 		}
 		super.paintSafely(graphics);
@@ -42,10 +43,8 @@ public class StyleTextFieldUI extends BasicTextFieldUI {
 		private static final long serialVersionUID = 1L;
 
 		public void paintBorder(Component coponent, Graphics g, int x, int y, int width, int height) {
-			Color oldColor = g.getColor();
-			g.setColor(Color.gray);
+			g.setColor(StaticColor.TEXT_BORDER);
 			g.drawRoundRect(x, y, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
-			g.setColor(oldColor);
 		}
 
 		public Insets getBorderInsets(Component c) {

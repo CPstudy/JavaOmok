@@ -5,7 +5,7 @@ import javax.swing.plaf.basic.BasicScrollPaneUI;
 
 public class StyleScrollBarUI extends BasicScrollBarUI {
 	private final Dimension d = new Dimension();
-	private Color back = new Color(220, 220, 220);
+	private Color back = StaticColor.BACKGROUND;
 
 	@Override
 	protected JButton createDecreaseButton(int orientation) {

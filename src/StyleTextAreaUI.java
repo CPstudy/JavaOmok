@@ -4,12 +4,11 @@ import java.awt.Graphics;
 import java.awt.Insets;
 
 import javax.swing.JComponent;
+import javax.swing.JTextArea;
 import javax.swing.border.AbstractBorder;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicTextAreaUI;
 import javax.swing.plaf.basic.BasicTextFieldUI;
-import javax.swing.text.Element;
-import javax.swing.text.View;
 
 public class StyleTextAreaUI extends BasicTextAreaUI {
 	
@@ -30,12 +29,17 @@ public class StyleTextAreaUI extends BasicTextAreaUI {
 		super.installUI(jComponent);
 		jComponent.setBorder(new RoundedBorder());
 		jComponent.setOpaque(false);
+		
+		JTextArea com = (JTextArea) jComponent;
+		com.setForeground(StaticColor.TEXT);
+		com.setSelectedTextColor(new Color(255, 255, 255));
+		com.setSelectionColor(new Color(204, 114, 61));
 	}
 
 	protected void paintSafely(Graphics graphics) {
 		JComponent c = getComponent();
 		if (!c.isOpaque()) {
-			graphics.setColor(c.getBackground());
+			graphics.setColor(StaticColor.TEXT_BACKGROUND);
 			graphics.fillRoundRect(x, y, c.getWidth() - 1, c.getHeight() - 1, ARC_WIDTH, ARC_HEIGHT);
 		}
 		super.paintSafely(graphics);
@@ -45,10 +49,8 @@ public class StyleTextAreaUI extends BasicTextAreaUI {
 		private static final long serialVersionUID = 1L;
 
 		public void paintBorder(Component coponent, Graphics g, int x, int y, int width, int height) {
-			Color oldColor = g.getColor();
-			g.setColor(Color.gray);
+			g.setColor(StaticColor.TEXT_BORDER);
 			g.drawRoundRect(x, y, width - 1, height - 1, ARC_WIDTH, ARC_HEIGHT);
-			g.setColor(oldColor);
 		}
 
 		public Insets getBorderInsets(Component c) {
