@@ -134,6 +134,22 @@ public class OmokServer extends JFrame implements ActionListener {
 								}
 								txtMessage.setText("");
 							}
+						} else if(msg.equals("gg")) {
+							try {
+								sendMessage("> 알림: 서버에서 게임을 초기화했습니다.");
+								sendMessage("gg");
+								txtConsole.append("게임을 초기화했습니다.\n");
+								txtMessage.setText("");
+								count = 0;
+								turn = 0;
+								startUser[0] = null;
+								startUser[1] = null;
+								firstPlayer = null;
+								stones = new int[15][15];
+								changeStone();
+							} catch (Exception e1) {
+								e1.printStackTrace();
+							}
 						} else {
 							try {
 								txtConsole.append(msg + "\n");
@@ -144,6 +160,8 @@ public class OmokServer extends JFrame implements ActionListener {
 								e1.printStackTrace();
 							}
 						}
+
+						bar.setValue(bar.getMaximum());
 					}
 				}
 			}
@@ -185,6 +203,33 @@ public class OmokServer extends JFrame implements ActionListener {
 			pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(s.getOutputStream())));
 			pw.println("[" + name + "] " + msge);
 			pw.flush();
+		}
+	}
+	
+	public void sendWhisper(String name, String msge) throws Exception {
+		// 스페이스와 스페이스 사이에 아이디를 추출하기 위해
+		int begin = msge.indexOf(" ") + 1;
+		int end = msge.indexOf(" ", begin);
+
+		if (end != -1) {
+			String id = msge.substring(begin, end);
+			String msg = msge.substring(end + 1);
+			Socket s = ht.get(id);
+			Socket mySocket = ht.get(name);
+			pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(s.getOutputStream())));
+			PrintWriter pw2 = new PrintWriter(new BufferedWriter(new OutputStreamWriter(mySocket.getOutputStream())));
+			
+			try {
+				if (pw != null) {
+					pw.println("[귓속말][" + name + "]: " + msg);
+					pw.flush();
+					pw2.println("[" + id + "]님에게 귓속말: " + msg);
+					pw2.flush();
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -415,6 +460,8 @@ public class OmokServer extends JFrame implements ActionListener {
 								startUser[0] = null;
 								startUser[1] = null;
 								firstPlayer = null;
+								stones = new int[15][15];
+								changeStone();
 							}
 							change *= -1;
 						}
@@ -427,6 +474,12 @@ public class OmokServer extends JFrame implements ActionListener {
 						firstPlayer = null;
 						stones = new int[15][15];
 						changeStone();
+					} else if (msg.indexOf("/to") >= 0) {// 귓속말
+						Scanner sc = new Scanner(msg).useDelimiter("\\s*:\\s*");
+						String name = sc.next();
+						String msge = sc.next();
+						sendWhisper(name, msge);
+						sc.close();
 					} else {
 						Scanner sc = new Scanner(msg).useDelimiter("\\s*:\\s*");
 						String name = sc.next();

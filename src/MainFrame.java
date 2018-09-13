@@ -100,7 +100,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		panelTitle = new JPanel();
 		panelTitle.setLayout(null);
 		panelTitle.setBounds(1, 1, WIDTH - 2, 35);
-		panelTitle.setBackground(new Color(220, 220, 220));
+		panelTitle.setBackground(StaticColor.BACKGROUND);
 		panelTitle.addMouseMotionListener(new MouseMotionListener() {
 
 			@Override
@@ -116,20 +116,21 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		});
 		add(panelTitle);
 
-		lblTitle = new JLabel("오목");
-		lblTitle.setBounds(FRAME_MARGIN + 12, (30 / 2) - 10, 50, 30);
+		lblTitle = new JLabel("오목", SwingConstants.CENTER);
+		lblTitle.setBounds(0, (30 / 2) - 10, WIDTH - 2, 30);
 		lblTitle.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+		lblTitle.setForeground(StaticColor.TEXT);
 		panelTitle.add(lblTitle);
 
 		btnClose = new JImageButton("img/btn_close.png");
-		btnClose.setBounds(862, 5, 25, 30);
+		btnClose.setBounds(865, 10, 21, 21);
 		btnClose.setBackground(new Color(0, 0, 0, 0));
 		btnClose.addMouseListener(this);
 		btnClose.addActionListener(this);
 		panelTitle.add(btnClose);
 
 		btnMinimize = new JImageButton("img/btn_min.png");
-		btnMinimize.setBounds(btnClose.getX() - 25, btnClose.getY(), 25, 30);
+		btnMinimize.setBounds(btnClose.getX() - 21, btnClose.getY(), 21, 21);
 		btnMinimize.setBackground(new Color(0, 0, 0, 0));
 		btnMinimize.addMouseListener(this);
 		btnMinimize.addActionListener(this);
@@ -196,11 +197,12 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		lblCount = new JLabel("헌재 접속자: 30명");
 		lblCount.setBounds(txtUserList.getX(), txtUserList.getY() + txtUserList.getHeight() + 5, 310, 15);
 		lblCount.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+		lblCount.setForeground(StaticColor.TEXT);
 		panelGame.add(lblCount);
 
 		panelChatting = new JPanel();
 		panelChatting.setLayout(null);
-		panelChatting.setBackground(new Color(220, 220, 220));
+		panelChatting.setBackground(StaticColor.BACKGROUND);
 		panelChatting.setBounds(lblCount.getX(), lblCount.getY() + lblCount.getHeight() + 5, 310, 250);
 		panelGame.add(panelChatting);
 
@@ -222,7 +224,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		panelChatting.add(txtMessage);
 
 		txtChatting = new JTextArea(4, 4);
-		txtChatting.setBackground(Color.white);
+		txtChatting.setBackground(StaticColor.BACKGROUND);
 		txtChatting.setUI(new StyleTextAreaUI());
 		txtChatting.setRows(4);
 		txtChatting.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
@@ -233,8 +235,10 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		scrollPane = new JScrollPane(txtChatting, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBounds(0, 0, 310, 210);
-		scrollPane.setBackground(new Color(0, 0, 0, 0));
+		scrollPane.setBackground(StaticColor.BACKGROUND);
 		scrollPane.setUI(new BasicScrollPaneUI());
+		scrollPane.setOpaque(true);
+		scrollPane.getViewport().setBackground(StaticColor.BACKGROUND);
 		panelChatting.add(scrollPane);
 
 		scrollBar = scrollPane.getVerticalScrollBar();
@@ -291,28 +295,53 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		stones[i][j] = color;
 
 		try {
+			imgStone[i][j].removeActionListener(this);
+			imgStone[i][j].removeMouseListener(this);
 			if (color == 1) {
 				imgStone[i][j].setImage("img/stone_black.png");
 				imgPoint.setImage("img/point_orange.png");
 				imgPoint.setLocation(imgStone[i][j].getLocation().x, imgStone[i][j].getLocation().y);
-				imgStone[i][j].removeActionListener(this);
-				imgStone[i][j].removeMouseListener(this);
 				checkStones(color, i, j);
 			} else if (color == 2) {
 				imgStone[i][j].setImage("img/stone_white.png");
 				imgPoint.setImage("img/point_red.png");
 				imgPoint.setLocation(imgStone[i][j].getLocation().x, imgStone[i][j].getLocation().y);
-				imgStone[i][j].removeActionListener(this);
-				imgStone[i][j].removeMouseListener(this);
 				checkStones(color, i, j);
 			} else if (color == 0) {
 				imgStone[i][j].setImage(null);
 				imgPoint.setImage("img/point_red.png");
 				imgPoint.setLocation(imgStone[i][j].getLocation().x, imgStone[i][j].getLocation().y);
+				if (turnPoint == 1) {
+					imgStone[i][j].addActionListener(this);
+					imgStone[i][j].addMouseListener(this);
+				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void removeListener() {
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				if (stones[i][j] == 0) {
+					imgStone[i][j].setImage("");
+				}
+				imgStone[i][j].removeActionListener(this);
+				imgStone[i][j].removeMouseListener(this);
+			}
+		}
+	}
+
+	public void addListener() {
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				if (stones[i][j] == 0) {
+					imgStone[i][j].addActionListener(this);
+					imgStone[i][j].addMouseListener(this);
+				}
+			}
 		}
 	}
 
@@ -343,9 +372,13 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		if (stone == 1) {
 			txtChatting.append("> 알림: " + panelPlayer1.lblName.getText() + "님이 승리하였습니다\n");
 			scrollBar.setValue(scrollBar.getMaximum());
+			MemberDAO.setWin(panelPlayer1.name);
+			MemberDAO.setDefeat(panelPlayer2.name);
 		} else {
 			txtChatting.append("> 알림: " + panelPlayer2.lblName.getText() + "님이 승리하였습니다\n");
 			scrollBar.setValue(scrollBar.getMaximum());
+			MemberDAO.setWin(panelPlayer2.name);
+			MemberDAO.setDefeat(panelPlayer1.name);
 		}
 
 		System.err.println("게임 승리");
@@ -370,7 +403,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 	public void login() {
 		DBConnect.IP = panelLogin.txtIP.getText();
 
-		if (panelLogin.txtID.getText().equals("") || panelLogin.txtPW.getText().equals("")) {
+		if (panelLogin.txtID.getText().equals("") || new String(panelLogin.txtPW.getPassword()).equals("")) {
 			panelLogin.lblMessage.setText("값을 입력해주세요.");
 			return;
 		}
@@ -379,7 +412,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 			MemberDTO memDTO = new MemberDTO();
 
 			memDTO.setId(panelLogin.txtID.getText().toString());
-			memDTO.setPw(panelLogin.txtPW.getText().toString());
+			memDTO.setPw(new String(panelLogin.txtPW.getPassword()));
 
 			boolean result = memDAO.login(memDTO);
 			if (result == true) {
@@ -488,6 +521,12 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 				}
 			}
 		}
+
+		if (e.getSource() == btnClose) {
+			btnClose.setImage("img/btn_close_hover.png");
+		} else if (e.getSource() == btnMinimize) {
+			btnMinimize.setImage("img/btn_min_hover.png");
+		}
 	}
 
 	@Override
@@ -498,6 +537,12 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					imgStone[i][j].setImage(null);
 				}
 			}
+		}
+
+		if (e.getSource() == btnClose) {
+			btnClose.setImage("img/btn_close.png");
+		} else if (e.getSource() == btnMinimize) {
+			btnMinimize.setImage("img/btn_min.png");
 		}
 	}
 
@@ -610,6 +655,9 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 				msg = in.readLine();
 				System.out.println("msg = " + msg);
 				if (msg.split(" ")[0].equals("/user")) {
+					if (turnPoint != 1) {
+						removeListener();
+					}
 					txtUserList.setText("");
 					names = msg.substring(6, msg.length()).split(" ");
 					lblCount.setText("현재 접속자: " + names.length + "명");
@@ -643,10 +691,12 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					} else if (msg.charAt(1) == '1') { // 자신의 턴인지 확인
 						if (msg.substring(2).equals(userID)) {
 							turnPoint = 1;
+							addListener();
 						} else {
 							turnPoint = 0;
+							removeListener();
 						}
-					} else if (msg.charAt(1) == '#' && turnPoint == 0) { 
+					} else if (msg.charAt(1) == '#' && turnPoint == 0) {
 						// 돌 위치 반영 형식: #돌 색/x좌표/y좌표
 						// 본인 턴이 아닌 사람만 반영
 						StringTokenizer st = new StringTokenizer(msg.substring(1), "/");
@@ -698,7 +748,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 						int y = Integer.parseInt(stonePoint[2]);
 
 						changeStones(color, x, y);
-					} 
+					}
 				} else if (msg.equals("gg")) {
 					System.err.println("게임 종료");
 					Thread thread = new Thread(new Runnable() {
@@ -737,7 +787,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		stones[x][y] = 0;
 
 		JOptionPane.showMessageDialog(null, "이곳에는 놓을 수 없습니다.", "룰 위반!", JOptionPane.WARNING_MESSAGE);
-		imgStone[x][y].setIcon(null);
+		imgStone[x][y].setImage(null);
 		imgStone[x][y].addMouseListener(this);
 		imgStone[x][y].addActionListener(this);
 	}
@@ -771,6 +821,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					blankcount3++;
 					blankcount4++;
 					list.add(new Stones(x, yy));
+					System.out.println(count);
 				} else if (stones[x][yy] == 0) {
 					between++;
 					// 떨어진 33
@@ -788,12 +839,15 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 							&& stones[x - 3][yy] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 3;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x >= 2 && stones[x - 1][yy] == color && stones[x - 2][yy] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 2;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x >= 1 && stones[x - 1][yy] == color) {
 						space4++;
 						blankcount4++;
+						System.out.println("blank4 : " + blankcount4);
 					}
 
 					break;
@@ -818,6 +872,13 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					blankcount3++;
 					blankcount4++;
 					list.add(new Stones(x, yy));
+					System.out.println(count);
+
+					if (color == BLACK && count > 5) {
+						rule(xx, yy);
+						return true;
+					}
+
 				} else if (stones[x][yy] == 0) {
 					between++;
 					// 떨어진 33
@@ -835,12 +896,15 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 							&& stones[x + 3][yy] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 3;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x < 13 && stones[x + 1][yy] == color && stones[x + 2][yy] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 2;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x < 14 && stones[x + 1][yy] == color) {
 						space4++;
 						blankcount4++;
+						System.out.println("blank4 : " + blankcount4);
 					}
 
 					break;
@@ -854,16 +918,21 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		}
 
 		if (count >= 5) {
+			System.out.println("5목");
 			stone = color;
 			list.add(new Stones(xx, yy));
 			winOmok(list);
 			return false;
 		} else if ((count == 4 && between > 0) || (blankcount4 == 4 && space4 < 2 && space4 != 0)) {
 			count4++;
+			System.out.println("blank4 : " + blankcount4);
+			System.out.println("between : " + between);
+			System.out.println("4목 개수 : " + count4);
 		} else if ((between == 2 && count == 3) || (between == 2 && blankcount3 == 3 && space < 2)) {
 			if (!(count == 3 && blankcount3 == 4)) {
 				count3++;
 			}
+			System.out.println("3목 개수 : " + count3);
 		}
 
 		list.clear();
@@ -885,6 +954,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					blankcount3++;
 					blankcount4++;
 					list.add(new Stones(xx, y));
+					System.out.println(count);
 				} else if (stones[xx][y] == 0) {
 					between++;
 					if (y >= 2 && stones[xx][y - 1] == color && stones[xx][y - 2] == 0) {
@@ -901,12 +971,15 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 							&& stones[xx][y - 3] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 3;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (y >= 2 && stones[xx][y - 1] == color && stones[xx][y - 2] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 2;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (y >= 1 && stones[xx][y - 1] == color) {
 						space4++;
 						blankcount4++;
+						System.out.println("blank4 : " + blankcount4);
 					}
 
 					break;
@@ -931,6 +1004,13 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					blankcount3++;
 					blankcount4++;
 					list.add(new Stones(xx, y));
+					System.out.println(count);
+
+					if (color == BLACK && count > 5) {
+						rule(xx, yy);
+						return true;
+					}
+
 				} else if (stones[xx][y] == 0) {
 					between++;
 					if (y < 13 && stones[xx][y + 1] == color && stones[xx][y + 2] == 0) {
@@ -947,12 +1027,15 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 							&& stones[xx][y + 3] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 3;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (y < 13 && stones[xx][y + 1] == color && stones[xx][y + 2] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 2;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (y < 14 && stones[xx][y + 1] == color) {
 						space4++;
 						blankcount4++;
+						System.out.println("blank4 : " + blankcount4);
 					}
 
 					break;
@@ -965,16 +1048,19 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		}
 
 		if (count >= 5) {
+			System.out.println("5목");
 			stone = color;
 			list.add(new Stones(xx, yy));
 			winOmok(list);
 			return false;
 		} else if ((count == 4 && between > 0) || (blankcount4 == 4 && space4 < 2 && space4 != 0)) {
 			count4++;
+			System.out.println("4목 개수 : " + count4);
 		} else if ((between == 2 && count == 3) || (between == 2 && blankcount3 == 3 && space < 2)) {
 			if (!(count == 3 && blankcount3 == 4)) {
 				count3++;
 			}
+			System.out.println("3목 개수 : " + count3);
 		}
 
 		list.clear();
@@ -1000,6 +1086,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					blankcount3++;
 					blankcount4++;
 					list.add(new Stones(x, y));
+					System.out.println(count);
 				} else if (stones[x][y] == 0) {
 					between++;
 					if (x >= 2 && y >= 2 && stones[x - 1][y - 1] == color && stones[x - 2][y - 2] == 0) {
@@ -1016,12 +1103,15 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 							&& stones[x - 3][y - 3] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 3;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x >= 2 && y >= 2 && stones[x - 1][y - 1] == color && stones[x - 2][y - 2] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 2;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x >= 1 && y >= 1 && stones[x - 1][y - 1] == color) {
 						space4++;
 						blankcount4++;
+						System.out.println("blank4 : " + blankcount4);
 					}
 
 					break;
@@ -1048,6 +1138,13 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					blankcount3++;
 					blankcount4++;
 					list.add(new Stones(x, y));
+					System.out.println(count);
+
+					if (color == BLACK && count > 5) {
+						rule(xx, yy);
+						return true;
+					}
+
 				} else if (stones[x][y] == 0) {
 					between++;
 					if (x < 13 && y < 13 && stones[x + 1][y + 1] == color && stones[x + 2][y + 2] == 0) {
@@ -1064,12 +1161,15 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 							&& stones[x + 3][y + 3] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 3;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x < 13 && y < 13 && stones[x + 1][y + 1] == color && stones[x + 2][y + 2] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 2;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x < 14 && y < 14 && stones[x + 1][y + 1] == color) {
 						space4++;
 						blankcount4++;
+						System.out.println("blank4 : " + blankcount4);
 					}
 
 					break;
@@ -1082,16 +1182,19 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		}
 
 		if (count >= 5) {
+			System.out.println("5목");
 			stone = color;
 			list.add(new Stones(xx, yy));
 			winOmok(list);
 			return false;
 		} else if ((count == 4 && between > 0) || (blankcount4 == 4 && space4 < 2 && space4 != 0)) {
 			count4++;
+			System.out.println("4목 개수 : " + count4);
 		} else if ((between == 2 && count == 3) || (between == 2 && blankcount3 == 3 && space < 2)) {
 			if (!(count == 3 && blankcount3 == 4)) {
 				count3++;
 			}
+			System.out.println("3목 개수 : " + count3);
 		}
 
 		list.clear();
@@ -1117,6 +1220,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					blankcount3++;
 					blankcount4++;
 					list.add(new Stones(x, y));
+					System.out.println(count);
 				} else if (stones[x][y] == 0) {
 					between++;
 					if (x < 13 && y >= 2 && stones[x + 1][y - 1] == color && stones[x + 2][y - 2] == 0) {
@@ -1133,12 +1237,15 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 							&& stones[x + 3][y - 3] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 3;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x < 13 && y >= 2 && stones[x + 1][y - 1] == color && stones[x + 2][y - 2] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 2;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x < 14 && y >= 1 && stones[x + 1][y - 1] == color) {
 						space4++;
 						blankcount4++;
+						System.out.println("blank4 : " + blankcount4);
 					}
 
 					break;
@@ -1165,6 +1272,13 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					blankcount3++;
 					blankcount4++;
 					list.add(new Stones(x, y));
+					System.out.println(count);
+
+					if (color == BLACK && count > 5) {
+						rule(xx, yy);
+						return true;
+					}
+
 				} else if (stones[x][y] == 0) {
 					between++;
 					if (x >= 2 && y < 13 && stones[x - 1][y + 1] == color && stones[x - 2][y + 2] == 0) {
@@ -1181,12 +1295,15 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 							&& stones[x - 3][y + 3] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 3;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x >= 2 && y < 13 && stones[x - 1][y + 1] == color && stones[x - 2][y + 2] == color) {
 						space4++;
 						blankcount4 = blankcount4 + 2;
+						System.out.println("blank4 : " + blankcount4);
 					} else if (x >= 1 && y < 14 && stones[x - 1][y + 1] == color) {
 						space4++;
 						blankcount4++;
+						System.out.println("blank4 : " + blankcount4);
 					}
 
 					break;
@@ -1199,19 +1316,24 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		}
 
 		if (count >= 5) {
+			System.out.println("5목");
 			stone = color;
 			list.add(new Stones(xx, yy));
 			winOmok(list);
 			return false;
 		} else if ((count == 4 && between > 0) || (blankcount4 == 4 && space4 < 2 && space4 != 0)) {
 			count4++;
+			System.out.println("4목 개수 : " + count4);
 		} else if ((between == 2 && count == 3 && space < 2) || (between == 2 && blankcount3 == 3 && space < 2)) {
 			if (!(count == 3 && blankcount3 == 4)) {
 				count3++;
 			}
+			System.out.println("3목 개수 : " + count3);
 		}
 
 		if (count3 >= 2 || count4 >= 2) {
+			System.out.println("3목의 개수 : " + count3);
+			System.out.println("4목의 개수 : " + count4);
 
 			if (color != WHITE) {
 				rule(xx, yy);
