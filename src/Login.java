@@ -46,6 +46,7 @@ public class Login extends JPanel implements ActionListener {
 	JPasswordField txtPW;
 	JButton btnLogin;
 	JButton btnJoin;
+	JButton btnRule;
 	JPanel panelJoin;
 	JPanel panelLogin;
 	JImageView imgTitle;
@@ -111,12 +112,6 @@ public class Login extends JPanel implements ActionListener {
 		btnJoin.setBackground(new Color(67, 116, 217));
 		btnJoin.setUI(new StyleButtonUI());
 		panelLogin.add(btnJoin);
-		
-		lblMessage = new JLabel("", SwingConstants.RIGHT);
-		lblMessage.setBounds(lblPW.getX(), btnJoin.getY(), lblPW.getWidth() + txtPW.getWidth() + 10, 30);
-		lblMessage.setForeground(Color.red);
-		lblMessage.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 12));
-		panelLogin.add(lblMessage);
 
 		txtIP = new JTextField(10);
 		txtIP.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 14));
@@ -124,6 +119,21 @@ public class Login extends JPanel implements ActionListener {
 		txtIP.setUI(new StyleTextFieldUI());
 		txtIP.setText("127.0.0.1");
 		add(txtIP);
+		
+		btnRule = new JButton("∞‘¿” ±‘ƒ¢");
+		btnRule.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 14));
+		btnRule.setBounds(430, txtIP.getY(), 100, 30);
+		btnRule.addActionListener(this);
+		btnRule.setForeground(Color.white);
+		btnRule.setBackground(new Color(70, 70, 70));
+		btnRule.setUI(new StyleButtonUI());
+		add(btnRule);
+		
+		lblMessage = new JLabel("", SwingConstants.RIGHT);
+		lblMessage.setBounds(lblPW.getX(), btnJoin.getY(), lblPW.getWidth() + txtPW.getWidth() + 10, 30);
+		lblMessage.setForeground(Color.red);
+		lblMessage.setFont(new Font("∏º¿∫ ∞ÌµÒ", Font.BOLD, 12));
+		panelLogin.add(lblMessage);
 		
 		imgBG = new JImageView("img/bg_window.png");
 		imgBG.setBounds(0, 0, WIDTH, HEIGHT);
@@ -138,6 +148,8 @@ public class Login extends JPanel implements ActionListener {
 		if(e.getSource() == btnJoin) {
 			DBConnect.IP = txtIP.getText();
 			panelJoin.setVisible(true);
+		} else if(e.getSource() == btnRule) {
+			new RuleFrame();
 		}
 	}
 

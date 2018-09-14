@@ -51,7 +51,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 
 	int[][] stones = new int[GRID][GRID];
 	int posX = 0, posY = 0;
-	int stoneX = 0, stoneY = 0;		// 돌이 놓여질 위치
+	int stoneX = 0, stoneY = 0; // 돌이 놓여질 위치
 	int stone = 0;
 
 	static int turnPoint = 0; // 자신의 턴인지 아닌지 표시
@@ -188,7 +188,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		imgPoint.setBounds(0, 0, STONE_SIZE, STONE_SIZE);
 		imgPoint.setVisible(false);
 		panelPoint.add(imgPoint);
-		
+
 		imgStone = new JImageView("img/stone_black.png");
 		imgStone.setBounds(-50, -50, STONE_SIZE, STONE_SIZE);
 		panelPoint.add(imgStone);
@@ -307,7 +307,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 
 		Image image = icon.getImage();
 
-		Point hotspot = new Point(2, 2);
+		Point hotspot = new Point(4, 4);
 		Cursor cursor = toolkit.createCustomCursor(image, hotspot, "cursor");
 		setCursor(cursor);
 	}
@@ -444,29 +444,31 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 
 	public void gameEnd() throws Exception {
 
-		txtChatting.append("> 알림: " + "3초 후에 판이 초기화 됩니다\n");
+		txtChatting.append("> 알림: " + "5초 후에 판이 초기화 됩니다\n");
 		scrollBar.setValue(scrollBar.getMaximum());
 
-		Thread.sleep(1000);
+		Thread.sleep(5000);
 
 		firstPlayer = null;
 		panelPlayer1.setName("");
 		panelPlayer1.name = "";
+		panelPlayer1.setScore("");
 		panelPlayer2.setName("");
 		panelPlayer2.name = "";
+		panelPlayer2.setScore("");
 
 		turnPoint = 0;
 
 		for (int i = 0; i < GRID; i++) {
 			for (int j = 0; j < GRID; j++) {
-				if(stones[i][j] != 0) {
+				if (stones[i][j] != 0) {
 					stones[i][j] = 0;
 					btnStone[i][j].setImage(null);
 					imgPoint.setVisible(false);
 				}
 			}
 		}
-		
+
 		btnPlayer1.setEnabled(true);
 		btnPlayer2.setEnabled(true);
 	}
@@ -501,16 +503,18 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 			for (int i = 0; i < GRID; i++) {
 				for (int j = 0; j < GRID; j++) {
 					if (e.getSource() == btnStone[i][j]) {
-						if (!boolColor) {
-							//btnStone[i][j].setImage("img/stone_white_transparent.png");
-							imgStone.setImage("img/stone_white_transparent.png");
-							imgStone.setLocation(btnStone[i][j].getX(), btnStone[i][j].getY());
-						} else {
-							//btnStone[i][j].setImage("img/stone_black_transparent.png");
-							imgStone.setImage("img/stone_black_transparent.png");
-							imgStone.setLocation(btnStone[i][j].getX(), btnStone[i][j].getY());
+						if (stones[i][j] == 0) {
+							if (!boolColor) {
+								// btnStone[i][j].setImage("img/stone_white_transparent.png");
+								imgStone.setImage("img/stone_white_transparent.png");
+								imgStone.setLocation(btnStone[i][j].getX(), btnStone[i][j].getY());
+							} else {
+								// btnStone[i][j].setImage("img/stone_black_transparent.png");
+								imgStone.setImage("img/stone_black_transparent.png");
+								imgStone.setLocation(btnStone[i][j].getX(), btnStone[i][j].getY());
+							}
+							System.out.println("(" + btnStone[i][j].getX() + ", " + btnStone[i][j].getY() + ")");
 						}
-						System.out.println("(" + btnStone[i][j].getX() + ", " + btnStone[i][j].getY() + ")");
 					}
 				}
 			}
@@ -529,9 +533,9 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 			for (int j = 0; j < GRID; j++) {
 				if (e.getSource() == btnStone[i][j]) {
 					imgStone.setLocation(-50, -50);
-					/*if(stones[i][j] == 0) {
-						btnStone[i][j].setImage(null);
-					}*/
+					/*
+					 * if(stones[i][j] == 0) { btnStone[i][j].setImage(null); }
+					 */
 				}
 			}
 		}
@@ -573,6 +577,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 
 						if (turnPoint == 1 && stones[i][j] == 0) {
 							imgPoint.setVisible(true);
+							imgStone.setLocation(-50, -50);
 
 							// boolColor = !boolColor;
 
@@ -604,7 +609,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 										pw.flush();
 									}
 								}
-								//removeListener();
+								// removeListener();
 							} catch (Exception e1) {
 								e1.printStackTrace();
 							}
