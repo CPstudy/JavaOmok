@@ -10,6 +10,8 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -35,9 +37,16 @@ import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.plaf.basic.BasicScrollPaneUI;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import javax.swing.text.StyledDocument;
 
 class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyListener, Runnable {
 
@@ -68,6 +77,8 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 	private PrintWriter pw;
 	private BufferedReader in;
 	private Thread playThread;
+	StyledDocument doc;
+	SimpleAttributeSet set;
 
 	JImageView imgStone;
 	JImageView imgBG;
@@ -94,11 +105,11 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 	JScrollPane scrollPane;
 	JScrollBar scrollBar;
 	JScrollPane scrollUser;
-	JTextArea txtChatting;
+	JTextPane txtChatting;
 	JTextArea txtUserList;
 	JTextField txtMessage;
 
-	OmokFrame(String userID) {
+	OmokFrame(String userID) throws BadLocationException {
 		this.userID = userID;
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -245,14 +256,16 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		txtMessage.addKeyListener(this);
 		panelChatting.add(txtMessage);
 
-		txtChatting = new JTextArea(4, 4);
+		txtChatting = new JTextPane();
 		txtChatting.setBackground(StaticColor.BACKGROUND);
-		txtChatting.setUI(new StyleTextAreaUI());
-		txtChatting.setRows(4);
+		txtChatting.setUI(new StyleTextPaneUI());
 		txtChatting.setFont(new Font("맑은 고딕", Font.PLAIN, 14));
-		txtChatting.setLineWrap(true);
-		txtChatting.setWrapStyleWord(true);
 		txtChatting.setEditable(false);
+		txtChatting.setContentType("text/html");
+
+		doc = txtChatting.getStyledDocument();
+		set = new SimpleAttributeSet();
+		txtChatting.setCharacterAttributes(set, true);
 
 		scrollPane = new JScrollPane(txtChatting, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -342,6 +355,107 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		}
 	}
 
+	public void addClientMessage(String msg) {
+		String m = "";
+
+		try {
+			if (msg.charAt(0) == ':') {
+				if (msg.charAt(1) == '1') {
+					// 전체 채팅
+					String[] temp = msg.substring(2, msg.length()).split("/");
+
+					// 채팅 보낸 사람
+					set = new SimpleAttributeSet();
+
+					StyleConstants.setBold(set, true);
+					StyleConstants.setForeground(set, Color.darkGray);
+					if (temp[0].equals(userID)) {
+						StyleConstants.setAlignment(set, StyleConstants.ALIGN_RIGHT);
+					}
+					doc.insertString(doc.getLength(), "" + temp[0] + "\n", set);
+
+					// 채팅 메시지
+					set = new SimpleAttributeSet();
+					StyleConstants.setForeground(set, Color.black);
+					if (temp[0].equals(userID)) {
+						StyleConstants.setAlignment(set, StyleConstants.ALIGN_RIGHT);
+						StyleConstants.setRightIndent(set, 14);
+					} else {
+						StyleConstants.setLeftIndent(set, 14);
+					}
+					doc.insertString(doc.getLength(), temp[1], set);
+
+				} else if (msg.charAt(1) == '2') {
+					// 귓속말 상대방
+					String[] temp = msg.substring(2, msg.length()).split("/");
+
+					// 채팅 보낸 사람
+					set = new SimpleAttributeSet();
+					StyleConstants.setBold(set, true);
+					StyleConstants.setForeground(set, Color.darkGray);
+
+					doc.insertString(doc.getLength(), "[귓속말]" + temp[0] + "\n", set);
+
+					// 채팅 메시지
+					set = new SimpleAttributeSet();
+					StyleConstants.setItalic(set, true);
+					StyleConstants.setForeground(set, Color.black);
+					StyleConstants.setLeftIndent(set, 14);
+
+					doc.insertString(doc.getLength(), temp[1], set);
+				} else if (msg.charAt(1) == '3') {
+					// 귓속말 본인
+					String[] temp = msg.substring(2, msg.length()).split("/");
+
+					// 채팅 보낸 사람
+					set = new SimpleAttributeSet();
+					StyleConstants.setBold(set, true);
+					StyleConstants.setForeground(set, Color.darkGray);
+					StyleConstants.setAlignment(set, StyleConstants.ALIGN_RIGHT);
+					doc.insertString(doc.getLength(), temp[0] + "님에게 귓속말\n", set);
+
+					// 채팅 메시지
+					set = new SimpleAttributeSet();
+					StyleConstants.setItalic(set, true);
+					StyleConstants.setForeground(set, Color.black);
+					StyleConstants.setAlignment(set, StyleConstants.ALIGN_RIGHT);
+					StyleConstants.setRightIndent(set, 14);
+					doc.insertString(doc.getLength(), temp[1], set);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		txtChatting.setCaretPosition(doc.getLength());
+	}
+
+	public void addServerMessage(String msg) {
+		try {
+			if (msg.charAt(0) == ':' && msg.charAt(1) == '0') {
+				// 새로운 플레이어 입장
+				String name = msg.substring(2).replace("\n", "");
+
+				set = new SimpleAttributeSet();
+
+				StyleConstants.setBold(set, true);
+				StyleConstants.setForeground(set, new Color(219, 58, 0));
+				doc.insertString(doc.getLength(), name + "님께서 입장하셨습니다.\n", set);
+
+				txtChatting.setCaretPosition(doc.getLength());
+
+			} else {
+				set = new SimpleAttributeSet();
+				StyleConstants.setBold(set, true);
+				StyleConstants.setForeground(set, new Color(219, 58, 0));
+				doc.insertString(doc.getLength(), msg, set);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		txtChatting.setCaretPosition(doc.getLength());
+	}
+
 	public void login() {
 		DBConnect.IP = panelLogin.txtIP.getText();
 
@@ -385,15 +499,17 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		}
 
 		// 게임 종료
-		txtChatting.append("************************************\n");
-		txtChatting.append("> 알림: 게임 종료\n");
+		addServerMessage("*****************************************\n");
+		addServerMessage("알림: 게임 종료\n");
 		if (stone == 1) {
-			txtChatting.append("> 알림: " + panelPlayer1.lblName.getText() + "님이 승리하였습니다\n");
+			// txtChatting.append("> 알림: " + panelPlayer1.lblName.getText() + "님이
+			// 승리하였습니다\n");
 			scrollBar.setValue(scrollBar.getMaximum());
 			MemberDAO.setWin(panelPlayer1.name);
 			MemberDAO.setDefeat(panelPlayer2.name);
 		} else {
-			txtChatting.append("> 알림: " + panelPlayer2.lblName.getText() + "님이 승리하였습니다\n");
+			// txtChatting.append("> 알림: " + panelPlayer2.lblName.getText() + "님이
+			// 승리하였습니다\n");
 			scrollBar.setValue(scrollBar.getMaximum());
 			MemberDAO.setWin(panelPlayer2.name);
 			MemberDAO.setDefeat(panelPlayer1.name);
@@ -425,7 +541,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		try {
 			ia = InetAddress.getByName(DBConnect.IP);
 			soc = new Socket(ia, 20000);
-			txtChatting.setText("> 알림: " + "서버 접속 성공!!\n");
+			addServerMessage("알림: 서버 접속 성공!!\n");
 			scrollBar.setValue(scrollBar.getMaximum());
 			pw = new PrintWriter(soc.getOutputStream(), true);
 			pw.println("@" + userID);
@@ -444,7 +560,8 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 
 	public void gameEnd() throws Exception {
 
-		txtChatting.append("> 알림: " + "5초 후에 판이 초기화 됩니다\n");
+		// txtChatting.append("> 알림: " + "5초 후에 판이 초기화 됩니다\n");
+		addServerMessage("알림: 5초 후이 판이 초가화됩니다.\n");
 		scrollBar.setValue(scrollBar.getMaximum());
 
 		Thread.sleep(5000);
@@ -683,7 +800,6 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 
 					}
 				} else if (msg.charAt(0) == '!') { // 전체 플레이어어게 공지, 게임시작
-					// txtChatting.append(msg + "\n");
 					if (msg.charAt(1) == '!') { // 게임 시작 메시지 다이얼로그로 나옴
 						JOptionPane.showMessageDialog(this, msg.substring(2));
 					} else if (msg.charAt(1) == '1') { // 자신의 턴인지 확인
@@ -745,6 +861,8 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 
 						changeStones(color, x, y);
 					}
+				} else if (msg.charAt(0) == ':') {
+					addClientMessage(msg + "\n");
 				} else if (msg.equals("gg")) {
 					System.err.println("게임 종료");
 					Thread thread = new Thread(new Runnable() {
@@ -759,7 +877,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					});
 					thread.start();
 				} else {
-					txtChatting.append(msg + "\n");
+					addServerMessage(msg + "\n");
 					scrollBar.setValue(scrollBar.getMaximum());
 				}
 			}
@@ -779,7 +897,6 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 	}
 
 	public void rule(int x, int y) {
-		// boolColor = !boolColor;
 		stones[x][y] = 0;
 
 		JOptionPane.showMessageDialog(null, "이곳에는 놓을 수 없습니다.", "룰 위반!", JOptionPane.WARNING_MESSAGE);
@@ -1308,9 +1425,9 @@ public class MainFrame {
 		try {
 			// UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			new OmokFrame("");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		new OmokFrame("");
 	}
 }

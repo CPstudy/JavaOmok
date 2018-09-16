@@ -136,7 +136,7 @@ public class OmokServer extends JFrame implements ActionListener {
 							}
 						} else if(msg.equals("gg")) {
 							try {
-								sendMessage("> 알림: 서버에서 게임을 초기화했습니다.");
+								sendMessage("알림: 서버에서 게임을 초기화했습니다.");
 								sendMessage("gg");
 								txtConsole.append("게임을 초기화했습니다.\n");
 								txtMessage.setText("");
@@ -186,7 +186,7 @@ public class OmokServer extends JFrame implements ActionListener {
 				String n = enu.nextElement();
 				Socket s = ht.get(n);
 				pw = new PrintWriter(s.getOutputStream(), true);
-				pw.println("[" + msge + "]님 입장");
+				pw.println(":0" + msge);
 				pw.flush();
 			}
 		}
@@ -201,7 +201,7 @@ public class OmokServer extends JFrame implements ActionListener {
 			// if (n.equals(name)) continue;
 			Socket s = ht.get(n);
 			pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(s.getOutputStream())));
-			pw.println("[" + name + "] " + msge);
+			pw.println(":1" + name + "/" + msge);
 			pw.flush();
 		}
 	}
@@ -221,9 +221,9 @@ public class OmokServer extends JFrame implements ActionListener {
 			
 			try {
 				if (pw != null) {
-					pw.println("[귓속말][" + name + "]: " + msg);
+					pw.println(":2" + name + "/" + msg);
 					pw.flush();
-					pw2.println("[" + id + "]님에게 귓속말: " + msg);
+					pw2.println(":3" + id + "/" + msg);
 					pw2.flush();
 				}
 			} catch (Exception e) {
