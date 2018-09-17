@@ -54,25 +54,25 @@ public class OmokServer extends JFrame implements ActionListener {
 		this.setLocation(xpos, ypos);
 		this.setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		panelGame = new JPanel();
 		panelGame.setLayout(new GridLayout(15, 15, 2, 2));
 		panelGame.setBounds(0, 0, 370, 370);
 		panelGame.setOpaque(false);
 		panelGame.setBackground(new Color(0, 0, 0, 0));
 		add(panelGame);
-		
+
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 15; j++) {
 				imgStone[i][j] = new JImageButton(null);
-				//imgStone[i][j].setBackground(new Color(0, 0, 0, 0));
+				// imgStone[i][j].setBackground(new Color(0, 0, 0, 0));
 				imgStone[i][j].setUI(new StyleTransparentButtonUI());
 				imgStone[i][j].addActionListener(this);
 				imgStone[i][j].setSize(22, 22);
 				panelGame.add(imgStone[i][j]);
 			}
 		}
-		
+
 		imgBG = new JImageView("img/bg_server.png");
 		imgBG.setBounds(0, 0, 370, 370);
 		add(imgBG);
@@ -90,19 +90,20 @@ public class OmokServer extends JFrame implements ActionListener {
 		bar = scroll.getVerticalScrollBar();
 		bar.setUI(new StyleConsoleScrollBarUI());
 		add(scroll);
-		
+
 		JPanel panelChatting = new JPanel();
 		panelChatting.setBounds(panelGame.getWidth(), 341, 600, 30);
-		panelChatting.setBackground(Color.black);;
+		panelChatting.setBackground(Color.black);
+		;
 		panelChatting.setLayout(null);
 		add(panelChatting);
-		
+
 		JLabel lblChat = new JLabel(">", SwingConstants.CENTER);
 		lblChat.setBounds(0, 0, 30, 30);
 		lblChat.setForeground(Color.white);
 		lblChat.setBackground(Color.black);
 		panelChatting.add(lblChat);
-		
+
 		txtMessage = new JTextField();
 		txtMessage.setBounds(lblChat.getX() + lblChat.getWidth(), 0, 600 - lblChat.getWidth(), 30);
 		txtMessage.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
@@ -119,11 +120,11 @@ public class OmokServer extends JFrame implements ActionListener {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					if (e.getSource() == txtMessage) {
 						String msg = txtMessage.getText();
-						if(msg.charAt(0) == '$') {
+						if (msg.charAt(0) == '$') {
 							String cmd = msg.substring(1);
 							String[] temp = cmd.split(" ");
-							
-							if(temp[0].equals("stone")) {
+
+							if (temp[0].equals("stone")) {
 								try {
 									stone = Integer.parseInt(temp[1]);
 									txtConsole.append("stone = " + stone + "\n");
@@ -134,7 +135,7 @@ public class OmokServer extends JFrame implements ActionListener {
 								}
 								txtMessage.setText("");
 							}
-						} else if(msg.equals("gg")) {
+						} else if (msg.equals("gg")) {
 							try {
 								sendMessage("알림: 서버에서 게임을 초기화했습니다.");
 								sendMessage("gg");
@@ -165,7 +166,7 @@ public class OmokServer extends JFrame implements ActionListener {
 					}
 				}
 			}
-			
+
 		});
 		panelChatting.add(txtMessage);
 
@@ -205,7 +206,7 @@ public class OmokServer extends JFrame implements ActionListener {
 			pw.flush();
 		}
 	}
-	
+
 	public void sendWhisper(String name, String msge) throws Exception {
 		// 스페이스와 스페이스 사이에 아이디를 추출하기 위해
 		int begin = msge.indexOf(" ") + 1;
@@ -218,7 +219,7 @@ public class OmokServer extends JFrame implements ActionListener {
 			Socket mySocket = ht.get(name);
 			pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(s.getOutputStream())));
 			PrintWriter pw2 = new PrintWriter(new BufferedWriter(new OutputStreamWriter(mySocket.getOutputStream())));
-			
+
 			try {
 				if (pw != null) {
 					pw.println(":2" + name + "/" + msg);
@@ -272,9 +273,9 @@ public class OmokServer extends JFrame implements ActionListener {
 				pw.println("*f" + firstPlayer);
 				pw.flush();
 			} else {
-				
+
 				System.out.println("first = " + firstPlayer);
-				
+
 				if (location == 1) {
 					pw.println("*1" + name);
 					startUser[0] = new String(name);
@@ -305,21 +306,21 @@ public class OmokServer extends JFrame implements ActionListener {
 			pw.flush();
 		}
 	}
-	
+
 	public void sendArray() throws Exception {
 		String sendMsg = "";
-		
-		for(int i = 0; i < 15; i++) {
-			for(int j = 0; j < 15; j++) {
+
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
 				sendMsg += String.valueOf(stones[i][j]);
 			}
-			if(i < 14) {
+			if (i < 14) {
 				sendMsg += "/";
 			}
 		}
-		
+
 		sendMsg = "!a" + sendMsg;
-		
+
 		Enumeration<String> enu = ht.keys();
 		while (enu.hasMoreElements()) {
 			String n = enu.nextElement();
@@ -354,15 +355,15 @@ public class OmokServer extends JFrame implements ActionListener {
 		if (turn >= 2)
 			turn = 0;
 	}
-	
+
 	public void changeStone() {
-		for(int i = 0; i < 15; i++) {
-			for(int j = 0; j < 15; j++) {
-				if(stones[i][j] == 0) {
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				if (stones[i][j] == 0) {
 					imgStone[i][j].setImage(null);
-				} else if(stones[i][j] == 1) {
+				} else if (stones[i][j] == 1) {
 					imgStone[i][j].setImage("img/server_stone_black.png");
-				} else if(stones[i][j] == 2) {
+				} else if (stones[i][j] == 2) {
 					imgStone[i][j].setImage("img/server_stone_white.png");
 				}
 			}
@@ -429,7 +430,7 @@ public class OmokServer extends JFrame implements ActionListener {
 						changeStone();
 						sendMessage("!" + msg);
 						turnPass();
-						
+
 						for (int ii = 0; ii < 15; ii++) {
 							for (int jj = 0; jj < 15; jj++) {
 								System.out.print(stones[ii][jj] + " ");
@@ -437,10 +438,12 @@ public class OmokServer extends JFrame implements ActionListener {
 							System.out.println();
 						}
 						System.out.println();
-						
+
+					} else if (msg.charAt(0) == ':') {
+
 					} else if (msg.split(" ")[0].equals("close")) {
 						System.err.println("close");
-						sendMessage(msg.split(" ")[1] + "님이 나갔습니다");
+						sendMessage(msg.split(" ")[1] + "님이 나갔습니다.");
 						synchronized (ht) {
 							ht.remove(msg.split(" ")[1]);
 						}
@@ -498,9 +501,9 @@ public class OmokServer extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		for(int i = 0; i < 15; i++) {
-			for(int j = 0; j < 15; j++) {
-				if(e.getSource() == imgStone[i][j]) {
+		for (int i = 0; i < 15; i++) {
+			for (int j = 0; j < 15; j++) {
+				if (e.getSource() == imgStone[i][j]) {
 					try {
 						stones[i][j] = stone;
 						changeStone();
@@ -517,7 +520,7 @@ public class OmokServer extends JFrame implements ActionListener {
 	public static void main(String[] args) throws Exception {
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-			//UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			// UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

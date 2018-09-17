@@ -123,6 +123,7 @@ public class InsertMemberFrame extends JPanel implements ActionListener {
 				}
 				break;
 			} else {
+				JOptionPane.showMessageDialog(this, "비밀번호가 일치하지 않습니다");
 				System.out.println("비밀번호가 일치하지 않습니다");
 			}
 

@@ -123,7 +123,7 @@ public class MemberDAO {
 		PreparedStatement pstmt = null;
 		try {
 			con = DBConnect.getConnection();
-			pstmt = con.prepareStatement("UPDATE member SET defeatcount = wincount + 1 WHERE mem_id = ?");
+			pstmt = con.prepareStatement("UPDATE member SET defeatcount = defeatcount + 1 WHERE mem_id = ?");
 			pstmt.setString(1, id);
 
 			int result = pstmt.executeUpdate();
@@ -145,7 +145,7 @@ public class MemberDAO {
 		PreparedStatement pstmt = null;
 		try {
 			con = DBConnect.getConnection();
-			pstmt = con.prepareStatement("UPDATE member SET drawcount = wincount + 1 WHERE mem_id = ?");
+			pstmt = con.prepareStatement("UPDATE member SET drawcount = drawcount + 1 WHERE mem_id = ?");
 			pstmt.setString(1, id);
 
 			int result = pstmt.executeUpdate();

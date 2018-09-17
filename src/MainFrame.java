@@ -217,7 +217,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		}
 
 		txtUserList = new JTextArea(4, 4);
-		txtUserList.setBounds(570, 200, 310, 95);
+		// txtUserList.setBounds(570, 200, 310, 95);
 		txtUserList.setBackground(Color.white);
 		txtUserList.setUI(new StyleTextAreaUI());
 		txtUserList.setRows(4);
@@ -225,10 +225,20 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		txtUserList.setLineWrap(true);
 		txtUserList.setWrapStyleWord(true);
 		txtUserList.setEditable(false);
-		panelGame.add(txtUserList);
+		// panelGame.add(txtUserList);
 
-		lblCount = new JLabel("헌재 접속자: 30명");
-		lblCount.setBounds(txtUserList.getX(), txtUserList.getY() + txtUserList.getHeight() + 5, 310, 15);
+		scrollUser = new JScrollPane(txtUserList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollUser.setBounds(570, 200, 310, 95);
+		scrollUser.setBackground(StaticColor.BACKGROUND);
+		scrollUser.setUI(new BasicScrollPaneUI());
+		scrollUser.setOpaque(true);
+		scrollUser.getViewport().setBackground(StaticColor.BACKGROUND);
+		scrollUser.getVerticalScrollBar().setUI(new StyleScrollBarUI());
+		panelGame.add(scrollUser);
+
+		lblCount = new JLabel("헌재 접속자: 0명");
+		lblCount.setBounds(scrollUser.getX(), scrollUser.getY() + scrollUser.getHeight() + 5, 310, 15);
 		lblCount.setFont(new Font("맑은 고딕", Font.BOLD, 12));
 		lblCount.setForeground(StaticColor.TEXT);
 		panelGame.add(lblCount);
@@ -432,6 +442,7 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 
 	public void addServerMessage(String msg) {
 		try {
+			System.err.println(msg);
 			if (msg.charAt(0) == ':' && msg.charAt(1) == '0') {
 				// 새로운 플레이어 입장
 				String name = msg.substring(2).replace("\n", "");
@@ -483,6 +494,18 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		}
 	}
 
+	public boolean checkDraw() {
+		for (int i = 0; i < GRID; i++) {
+			for (int j = 0; j < GRID; j++) {
+				if (stones[i][j] != 0) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
 	public void winOmok(ArrayList<Stones> list) throws Exception {
 		int x;
 		int y;
@@ -501,18 +524,20 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 		// 게임 종료
 		addServerMessage("*****************************************\n");
 		addServerMessage("알림: 게임 종료\n");
-		if (stone == 1) {
-			// txtChatting.append("> 알림: " + panelPlayer1.lblName.getText() + "님이
-			// 승리하였습니다\n");
-			scrollBar.setValue(scrollBar.getMaximum());
-			MemberDAO.setWin(panelPlayer1.name);
-			MemberDAO.setDefeat(panelPlayer2.name);
+
+		if (checkDraw()) {
+			MemberDAO.setDraw(panelPlayer1.name);
+			MemberDAO.setDraw(panelPlayer2.name);
 		} else {
-			// txtChatting.append("> 알림: " + panelPlayer2.lblName.getText() + "님이
-			// 승리하였습니다\n");
-			scrollBar.setValue(scrollBar.getMaximum());
-			MemberDAO.setWin(panelPlayer2.name);
-			MemberDAO.setDefeat(panelPlayer1.name);
+			if (stone == 1 && boolColor) {
+				MemberDAO.setWin(panelPlayer1.name);
+				MemberDAO.setDefeat(panelPlayer2.name);
+			}
+
+			if (stone == 2 && !boolColor) {
+				MemberDAO.setWin(panelPlayer2.name);
+				MemberDAO.setDefeat(panelPlayer1.name);
+			}
 		}
 
 		System.err.println("게임 승리");
@@ -622,11 +647,9 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 					if (e.getSource() == btnStone[i][j]) {
 						if (stones[i][j] == 0) {
 							if (!boolColor) {
-								// btnStone[i][j].setImage("img/stone_white_transparent.png");
 								imgStone.setImage("img/stone_white_transparent.png");
 								imgStone.setLocation(btnStone[i][j].getX(), btnStone[i][j].getY());
 							} else {
-								// btnStone[i][j].setImage("img/stone_black_transparent.png");
 								imgStone.setImage("img/stone_black_transparent.png");
 								imgStone.setLocation(btnStone[i][j].getX(), btnStone[i][j].getY());
 							}
@@ -862,7 +885,11 @@ class OmokFrame extends JFrame implements MouseListener, ActionListener, KeyList
 						changeStones(color, x, y);
 					}
 				} else if (msg.charAt(0) == ':') {
-					addClientMessage(msg + "\n");
+					if(msg.charAt(1) == '0') {
+						addServerMessage(msg + "\n");
+					} else {
+						addClientMessage(msg + "\n");
+					}
 				} else if (msg.equals("gg")) {
 					System.err.println("게임 종료");
 					Thread thread = new Thread(new Runnable() {
