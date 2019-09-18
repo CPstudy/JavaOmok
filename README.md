@@ -43,7 +43,7 @@
 
 ## 서버
 
-![게임 시작](https://github.com/CPstudy/JavaOmok/blob/master/screenshot/%EA%B2%8C%EC%9E%84%EC%8B%9C%EC%9E%91.png)
+![게임 시작](https://github.com/CPstudy/JavaOmok/blob/master/screenshot/서버.png)
 
 > 서버에서는 클라이언트에 돌을 착수할 수 있는 기능이 있으며 서버에서 채팅창에 메시지를 보낼 수 있다.
 >
